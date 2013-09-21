@@ -1,0 +1,8 @@
+syntax: glob
+
+*.py[co]
+README.html
+__pycache__
+build
+crashlog.egg-info
+dist
