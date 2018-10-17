@@ -1,6 +1,6 @@
 language: python
 before_install:
-    - pip install pytest
+    - pip install pytest flake8
 script:
     - python run_tests.py
 
