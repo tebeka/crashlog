@@ -20,6 +20,9 @@ import crashlog
 crashlog.install(email=['bugs@looney.org'], logfile='/path/to/log.txt')
 ```
 
+For email to work, you need to set `SMTP_SERVER` environment variable and
+optionally `SMTP_USER` and `SMTP_PASSWORD`.
+
 Contact
 =======
 Miki Tebeka <miki.tebeka@gmail.com>
