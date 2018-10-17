@@ -33,6 +33,7 @@ def send_email(emails, program, message):
     crashlog_email = 'noreply@somewhere.com'
     message['From'] = 'Crashlog <{}>'.format(crashlog_email)
 
+    # FIXME: Get smtp details
     smtp = SMTP('mailhost.somewhere.com')
     smtp.sendmail(crashlog_email, _emails, message.as_string())
 
