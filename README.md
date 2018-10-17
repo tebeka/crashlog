@@ -1,5 +1,9 @@
 # crashlog 0.1.0
 
+[![Build Status](https://travis-ci.org/tebeka/crashlog.svg?branch=master)](https://travis-ci.org/tebeka/crashlog)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+
 Send email and log to file when there's an uncaught exception in your code
 
 
