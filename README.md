@@ -10,9 +10,11 @@ Send email and log to file when there's an uncaught exception in your code
 
 # Usage
     
-    import crashlog
+```python
+import crashlog
 
-    crashlog.install(email=['bugs@looney.org'], logfile='/path/to/log.txt')
+crashlog.install(email=['bugs@looney.org'], logfile='/path/to/log.txt')
+```
 
 Contact
 =======
