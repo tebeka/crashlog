@@ -6,6 +6,10 @@ Use in your code:
 
     logfile = path.expanduser('~/.crashes.log')
     crashlog.install(emails=['daffy@duck.com'], logfile=logfile)
+
+
+For emails to work set SMTP_SERVER environment variable and possible SMTP_USER
+and SMTP_PASSWORD.
 """
 
 __version__ = '0.1.0'
@@ -28,13 +32,19 @@ _prev_hook = None
 
 
 def send_email(emails, program, message):
+    server = environ.get('SMTP_SERVER')
+    if not server:
+        return
+
     message = MIMEText(message)
     message['Subject'] = '{} crashed'.format(program)
     crashlog_email = 'noreply@somewhere.com'
     message['From'] = 'Crashlog <{}>'.format(crashlog_email)
 
-    # FIXME: Get smtp details
-    smtp = SMTP('mailhost.somewhere.com')
+    smtp = SMTP(server)
+    user, passwd = environ.get('SMTP_USER', 'SMTP_PASSWORD')
+    if user and passwd:
+        smtp.login(user, passwd)
     smtp.sendmail(crashlog_email, _emails, message.as_string())
 
 

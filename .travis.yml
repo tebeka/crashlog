@@ -2,7 +2,7 @@ language: python
 before_install:
     - pip install pytest
 script:
-    - python -m pytest -v
+    - python run_tests.py
 
 matrix:
     include:
