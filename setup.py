@@ -3,20 +3,29 @@ try:
 except ImportError:
     from distutils.core import setup
 
-import crashlog
 
-with open('README.md') as fo:
-    long_description=fo.read()
+def version():
+    with open('crashlog.py') as fp:
+        for line in fp:
+            if '__version__' not in line:
+                continue
+            fields = line.split('=')
+            return fields[-1].strip().replace("'", '')
+
+
+with open('README.md') as fp:
+    long_description = fp.read()
 
 setup(
     name='crashlog',
-    version=crashlog.__version__,
+    version=version(),
     description='Log & email uncaught exceptions',
     long_description=long_description,
+    long_description_content_type='text/markdown',
     author='Miki Tebeka',
     author_email='miki.tebeka@gmail.com',
     license='MIT',
-    url='https://bitbucket.org/tebeka/crashlog',
+    url='https://github.com/tebeka/crashlog',
     py_modules=['crashlog'],
     classifiers=[
         'Development Status :: 4 - Beta',
@@ -28,6 +37,5 @@ setup(
         'Topic :: Software Development :: Libraries',
         'Topic :: Software Development :: Libraries :: Python Modules',
     ],
-    tests_require=['nose'],
-    test_suite = 'nose.collector',
+    tests_require=['pytest'],
 )

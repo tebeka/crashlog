@@ -1,26 +1,30 @@
-'''Send email and log when there is an uncaught exception in your code
+"""Send email and log when there is an uncaught exception in your code
 Use in your code:
 
+    from os import path
     import crashlog
-    crashlog.install(emails=['daffy@duck.com'])
-'''
 
-__version__ = '0.0.1'
+    logfile = path.expanduser('~/.crashes.log')
+    crashlog.install(emails=['daffy@duck.com'], logfile=logfile)
+"""
+
+__version__ = '0.1.0'
 
 import sys
 from smtplib import SMTP
 from email.mime.text import MIMEText
-from os import environ
+from os import environ, makedirs, path
 from traceback import format_exception
+from time import ctime
+
 if sys.version_info[0] >= 3:
     from io import StringIO
 else:
     from cStringIO import StringIO
-from time import ctime
 
-_EMAILS = []
-_LOGFILE = None
-_PREV_EXCEPTHOOK = None
+_emails = []
+_logfile = None
+_prev_hook = None
 
 
 def send_email(emails, program, message):
@@ -30,12 +34,14 @@ def send_email(emails, program, message):
     message['From'] = 'Crashlog <{}>'.format(crashlog_email)
 
     smtp = SMTP('mailhost.somewhere.com')
-    smtp.sendmail(crashlog_email, _EMAILS, message.as_string())
+    smtp.sendmail(crashlog_email, _emails, message.as_string())
 
 
 def format_message(type, value, traceback):
-    message = StringIO()
-    out = lambda m: message.write(u'{}\n'.format(m))
+    io = StringIO()
+
+    def out(msg):
+        io.write(u'{}\n'.format(msg))
 
     out(ctime())
     out('== Traceback ==')
@@ -46,31 +52,47 @@ def format_message(type, value, traceback):
     for key, value in environ.items():
         out('{} = {}'.format(key, value))
 
-    return message.getvalue()
+    return io.getvalue()
 
 
 def excepthook(type, value, traceback):
     try:
-        if not (_EMAILS or _LOGFILE):
+        if not (_emails or _logfile):
             return
 
         message = format_message(type, value, traceback)
-        if _EMAILS:
-            send_email(_EMAILS, sys.argv[0], message)
+        if _emails:
+            send_email(_emails, sys.argv[0], message)
 
-        if _LOGFILE:
-            with open(_LOGFILE, 'at') as fo:
+        if _logfile:
+            with open(_logfile, 'at') as fo:
                 fo.write('{}\n'.format(message))
 
     finally:
-        if _PREV_EXCEPTHOOK:
-            _PREV_EXCEPTHOOK(type, value, traceback)
+        if _prev_hook:
+            _prev_hook(type, value, traceback)
 
 
 def install(emails=None, logfile=None):
-    global _EMAILS, _PREV_EXCEPTHOOK, _LOGFILE
+    """Install crashlog uncaught exception hook.
 
-    _EMAILS = emails or _EMAILS
-    _LOGFILE = logfile
-    _PREV_EXCEPTHOOK = sys.excepthook
+    Parameters
+    ----------
+    emails : list of str
+        List of emails to send notification to
+    logfile : str
+        Log file to write exceptions to
+    """
+    global _emails, _prev_hook, _logfile
+
+    log_dir = path.dirname(logfile)
+    if not path.exists(log_dir):
+        makedirs(log_dir)
+
+    if emails and isinstance(emails, str):
+        emails = [emails]
+
+    _emails = emails or _emails
+    _logfile = logfile
+    _prev_hook = sys.excepthook
     sys.excepthook = excepthook
