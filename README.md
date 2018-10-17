@@ -21,4 +21,4 @@ Miki Tebeka <miki.tebeka@gmail.com>
 Bug reports go [here][bugs].
 
 
-[bugs]: https://bitbucket.org/tebeka/crashlog/issues
+[bugs]: https://github.com/tebeka/crashlog/issues
